@@ -6,8 +6,9 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "hardhat/console.sol";
 
-// We need to import the helper functions from the contract that we copy/pasted.
-import { Base64 } from "./libraries/Base64.sol";
+import { Pack } from "./libraries/Pack.sol";
+import { Svg } from "./libraries/Svg.sol";
+import { Common } from "./libraries/Common.sol";
 
 contract Sample is ERC721URIStorage {
   using Counters for Counters.Counter;
@@ -17,26 +18,6 @@ contract Sample is ERC721URIStorage {
 
   constructor() ERC721("Sample", "SAMPLE") {
     console.log("This is my NFT contract. Woah!");
-  }
-
-  function _uint2str(uint256 _i) internal pure returns (string memory str) {
-    if (_i == 0) {
-      return "0";
-    }
-    uint256 j = _i;
-    uint256 length;
-    while (j != 0) {
-      length++;
-      j /= 10;
-    }
-    bytes memory bstr = new bytes(length);
-    uint256 k = length;
-    j = _i;
-    while (j != 0) {
-      bstr[--k] = bytes1(uint8(48 + (j % 10)));
-      j /= 10;
-    }
-    str = string(bstr);
   }
 
   function random(string memory input) internal pure returns (uint256) {
@@ -52,12 +33,13 @@ contract Sample is ERC721URIStorage {
         content = abi.encodePacked(content, rectStart, Strings.toString(j), rectAfterWidth, Strings.toString(i), rectAfterHeight, colors[random(string(abi.encodePacked(Strings.toString(i), Strings.toString(j), Strings.toString(newItemId)))) % colors.length], rectEnd);
       }
     }
-    string memory svg = string(abi.encodePacked(svgStart, content, svgEnd));
+    bytes memory svg = Svg.finalize(10, 10, content);
 
-    string memory json = string(
-      abi.encodePacked('{"name":"sample #', _uint2str(newItemId), '","description":"sample nft","image":"data:image/svg+xml;base64,', Base64.encode(bytes(svg)), '"}"'));
-
-    string memory encodedJson = string(abi.encodePacked("data:application/json;base64,", json));
+    string memory encodedJson = Pack.pack(
+      string(abi.encodePacked("sample #", Common.uint2str(newItemId))),
+      "sample nft",
+      svg
+    );
 
     console.log(encodedJson);
 
@@ -72,9 +54,6 @@ contract Sample is ERC721URIStorage {
     emit NewEpicNFTMinted(msg.sender, newItemId);
   }
 
-  string constant svgStart =
-    "<svg xmlns='http://www.w3.org/2000/svg' preserveAspectRatio='xMinYMin meet' viewBox='0 0 10 10'>";
-  string constant svgEnd = "</svg>";
   string constant rectStart = "<rect x='";
   string constant rectAfterWidth = "' y='";
   string constant rectAfterHeight = "' height='1' width='1' fill='";
