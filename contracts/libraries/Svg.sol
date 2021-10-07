@@ -20,4 +20,27 @@ library Svg {
       "</svg>"
     );
   }
+
+  // Rect - construct rectangle based on its coordinates, dimensions, and fill.
+  function rect(
+    uint32 x,
+    uint32 y,
+    uint32 width,
+    uint32 height,
+    string memory fill
+  ) internal pure returns (bytes memory) {
+    return abi.encodePacked(
+      "<rect y='",
+      height,
+      "' x='",
+      width,
+      "' height='",
+      height,
+      "' width='",
+      width,
+      "' fill='",
+      fill,
+      "'/>"
+    )
+  }
 }
