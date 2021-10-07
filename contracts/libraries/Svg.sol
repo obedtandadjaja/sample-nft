@@ -41,6 +41,6 @@ library Svg {
       "' fill='",
       fill,
       "'/>"
-    )
+    );
   }
 }
