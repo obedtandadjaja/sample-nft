@@ -22,4 +22,14 @@ library Common {
     }
     str = string(bstr);
   }
+
+  // Random - returns a uint256 based on string input.
+  function random(string memory input) internal pure returns (uint256) {
+    return uint256(keccak256(abi.encodePacked(input)));
+  }
+
+  function randomFrom(
+    string memory input, uint256 numInput) internal pure returns (uint256) {
+    return random(string(abi.encodePacked(input, uint2str(numInput))));
+  }
 }

@@ -20,17 +20,31 @@ contract Sample is ERC721URIStorage {
     console.log("This is my NFT contract. Woah!");
   }
 
-  function random(string memory input) internal pure returns (uint256) {
-    return uint256(keccak256(abi.encodePacked(input)));
-  }
-
   function constructNFT() public {
     uint256 newItemId = _tokenIds.current();
 
     bytes memory content = "";
     for (uint i = 0; i < 10; i++) {
       for (uint j = 0; j < 10; j++) {
-        content = abi.encodePacked(content, rectStart, Strings.toString(j), rectAfterWidth, Strings.toString(i), rectAfterHeight, colors[random(string(abi.encodePacked(Strings.toString(i), Strings.toString(j), Strings.toString(newItemId)))) % colors.length], rectEnd);
+        content = abi.encodePacked(
+          content,
+          rectStart,
+          Strings.toString(j),
+          rectAfterWidth,
+          Strings.toString(i),
+          rectAfterHeight,
+          colors[
+            Common.random(
+              string(
+                abi.encodePacked(
+                  Strings.toString(i),
+                  Strings.toString(j),
+                  Strings.toString(newItemId)
+                )
+              )
+            ) % colors.length
+          ],
+          rectEnd);
       }
     }
     bytes memory svg = Svg.finalize(10, 10, content);
